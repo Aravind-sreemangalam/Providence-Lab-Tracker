@@ -1,0 +1,4 @@
+lab_systems.db
+__pycache__/
+*.pyc
+.env
