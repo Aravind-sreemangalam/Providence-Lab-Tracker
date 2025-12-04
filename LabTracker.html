@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Lab System Tracker</title>
+    <style>
+        :root {
+            --color-primary: #2180a8;
+            --color-primary-hover: #1a6586;
+            --color-success: #22a55a;
+            --color-danger: #c01530;
+            --color-warning: #a84b2f;
+            --color-bg: #faf8f9;
+            --color-surface: #ffffff;
+            --color-text: #1f2121;
+            --color-text-secondary: #627c7c;
+            --color-border: #d4d1d5;
+            --color-shadow: rgba(31, 33, 33, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--color-surface);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: var(--color-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-btn:hover {
+            color: var(--color-text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--color-success);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--color-danger);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--color-warning);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--color-text);
+        }
+
+        .form-section {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--color-text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: var(--color-surface);
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-bg);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-border);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .table-container {
+            background: var(--color-surface);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--color-bg);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: var(--color-bg);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-working {
+            background: rgba(34, 165, 90, 0.15);
+            color: var(--color-success);
+        }
+
+        .status-not-working {
+            background: rgba(192, 21, 47, 0.15);
+            color: var(--color-danger);
+        }
+
+        .status-under-repair {
+            background: rgba(168, 75, 47, 0.15);
+            color: var(--color-warning);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select {
+            padding: 8px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--color-surface);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--color-surface);
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+        }
+
+        .summary-item h3 {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .summary-item .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖥️ College Lab System Tracker</h1>
+            <button class="btn btn-primary" onclick="exportData()">📥 Export Data</button>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('add-system')">Add/Update System</button>
+            <button class="tab-btn" onclick="switchTab('all-systems')">All Systems</button>
+            <button class="tab-btn" onclick="switchTab('complaints')">Complaints</button>
+            <button class="tab-btn" onclick="switchTab('reports')">Reports</button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-label">Total Working</div>
+                    <div class="stat-value" id="statWorking">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-label">Not Working</div>
+                    <div class="stat-value" id="statNotWorking">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Under Repair</div>
+                    <div class="stat-value" id="statUnderRepair">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Systems</div>
+                    <div class="stat-value" id="statTotal">0</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 30px; margin-bottom: 15px;">Status by Lab</h2>
+            <div id="labSummary" class="summary-grid"></div>
+
+            <h2 style="margin-top: 30px; margin-bottom: 15px;">Recent Complaints</h2>
+            <div id="recentComplaints"></div>
+        </div>
+
+        <!-- ADD/UPDATE SYSTEM TAB -->
+        <div id="add-system" class="tab-content">
+            <div class="form-section">
+                <h2 style="margin-bottom: 20px;">Add or Update System</h2>
+                <form id="systemForm" onsubmit="addSystem(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sysId">System ID *</label>
+                            <input type="text" id="sysId" placeholder="e.g., 6005-PC-01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="labNo">Lab Number *</label>
+                            <select id="labNo" required>
+                                <option value="">Select Lab</option>
+                                <option value="6005">Lab 6005</option>
+                                <option value="6004">Lab 6004</option>
+                                <option value="6012">Lab 6012</option>
+                                <option value="3003">Lab 3003</option>
+                                <option value="3005">Lab 3005</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="seatNo">Seat/Bench Number</label>
+                            <input type="text" id="seatNo" placeholder="e.g., R1-S1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="makeModel">Make/Model</label>
+                            <input type="text" id="makeModel" placeholder="e.g., Dell / HP / Assembled">
+                        </div>
+                        <div class="form-group">
+                            <label for="specs">Specs (CPU/RAM/Storage)</label>
+                            <input type="text" id="specs" placeholder="e.g., i5/8GB/256GB SSD">
+                        </div>
+                        <div class="form-group">
+                            <label for="osType">Operating System</label>
+                            <input type="text" id="osType" placeholder="e.g., Windows 10, Ubuntu 20.04">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" required onchange="toggleComplaintFields()">
+                                <option value="">Select Status</option>
+                                <option value="Working">Working</option>
+                                <option value="Not Working">Not Working</option>
+                                <option value="Under Repair">Under Repair</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="issueCategory">Issue Category</label>
+                            <select id="issueCategory">
+                                <option value="">No Issue</option>
+                                <option value="No Power">No Power</option>
+                                <option value="Display">Display Issue</option>
+                                <option value="Boot Issue">Boot Issue</option>
+                                <option value="OS Crash">OS Crash</option>
+                                <option value="Network">Network Issue</option>
+                                <option value="Keyboard/Mouse">Keyboard/Mouse</option>
+                                <option value="Printer">Printer Issue</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="detailedComplaint">Detailed Complaint</label>
+                            <textarea id="detailedComplaint" placeholder="Describe the issue in detail..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportedDate">Reported Date *</label>
+                            <input type="date" id="reportedDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportedBy">Reported By</label>
+                            <input type="text" id="reportedBy" placeholder="Name or ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="assignedTo">Assigned To</label>
+                            <input type="text" id="assignedTo" placeholder="Technician name">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resolution">Resolution/Action Taken</label>
+                            <textarea id="resolution" placeholder="What was done to fix it..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-primary">💾 Save System</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ALL SYSTEMS TAB -->
+        <div id="all-systems" class="tab-content">
+            <div class="search-box">
+                <input type="text" id="searchBox" placeholder="Search by System ID, Lab, or Model..." onkeyup="filterTable()">
+            </div>
+
+            <div class="filter-controls">
+                <select id="labFilter" onchange="filterTable()">
+                    <option value="">All Labs</option>
+                    <option value="6005">Lab 6005</option>
+                    <option value="6004">Lab 6004</option>
+                    <option value="6012">Lab 6012</option>
+                    <option value="3003">Lab 3003</option>
+                    <option value="3005">Lab 3005</option>
+                </select>
+
+                <select id="statusFilter" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="Working">Working</option>
+                    <option value="Not Working">Not Working</option>
+                    <option value="Under Repair">Under Repair</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="systemsTable">
+                    <thead>
+                        <tr>
+                            <th>System ID</th>
+                            <th>Lab</th>
+                            <th>Seat</th>
+                            <th>Make/Model</th>
+                            <th>Status</th>
+                            <th>Issue</th>
+                            <th>Reported</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="systemsBody">
+                        <tr><td colspan="8" class="empty-state"><p>No systems added yet. Add a system to get started!</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- COMPLAINTS TAB -->
+        <div id="complaints" class="tab-content">
+            <div class="filter-controls">
+                <select id="complaintLabFilter" onchange="filterComplaints()">
+                    <option value="">All Labs</option>
+                    <option value="6005">Lab 6005</option>
+                    <option value="6004">Lab 6004</option>
+                    <option value="6012">Lab 6012</option>
+                    <option value="3003">Lab 3003</option>
+                    <option value="3005">Lab 3005</option>
+                </select>
+
+                <select id="complaintStatusFilter" onchange="filterComplaints()">
+                    <option value="">All Status</option>
+                    <option value="Not Working">Not Working</option>
+                    <option value="Under Repair">Under Repair</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="complaintsTable">
+                    <thead>
+                        <tr>
+                            <th>System ID</th>
+                            <th>Lab</th>
+                            <th>Issue Category</th>
+                            <th>Description</th>
+                            <th>Reported Date</th>
+                            <th>Assigned To</th>
+                            <th>Resolved Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaintsBody">
+                        <tr><td colspan="7" class="empty-state"><p>No complaints recorded yet.</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- REPORTS TAB -->
+        <div id="reports" class="tab-content">
+            <div class="form-section">
+                <h2 style="margin-bottom: 20px;">Lab Reports</h2>
+
+                <h3 style="margin-top: 20px; margin-bottom: 15px;">System Status Count by Lab</h3>
+                <div id="reportSummary" class="summary-grid"></div>
+
+                <h3 style="margin-top: 20px; margin-bottom: 15px;">Complaint Statistics</h3>
+                <div id="complaintStats"></div>
+
+                <button class="btn btn-primary" onclick="printReport()" style="margin-top: 20px;">🖨️ Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage
+        let systems = JSON.parse(localStorage.getItem('labSystems')) || [];
+
+        // Set today's date as default
+        document.getElementById('reportedDate').valueAsDate = new Date();
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') updateDashboard();
+            else if (tabName === 'reports') generateReports();
+            else if (tabName === 'all-systems') displayAllSystems();
+            else if (tabName === 'complaints') displayComplaints();
+        }
+
+        // Add system
+        function addSystem(event) {
+            event.preventDefault();
+            
+            const system = {
+                id: document.getElementById('sysId').value,
+                lab: document.getElementById('labNo').value,
+                seat: document.getElementById('seatNo').value,
+                makeModel: document.getElementById('makeModel').value,
+                specs: document.getElementById('specs').value,
+                os: document.getElementById('osType').value,
+                status: document.getElementById('status').value,
+                issueCategory: document.getElementById('issueCategory').value,
+                complaint: document.getElementById('detailedComplaint').value,
+                reportedDate: document.getElementById('reportedDate').value,
+                reportedBy: document.getElementById('reportedBy').value,
+                assignedTo: document.getElementById('assignedTo').value,
+                resolution: document.getElementById('resolution').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const existingIndex = systems.findIndex(s => s.id === system.id);
+            if (existingIndex >= 0) {
+                systems[existingIndex] = system;
+            } else {
+                systems.push(system);
+            }
+
+            localStorage.setItem('labSystems', JSON.stringify(systems));
+            clearForm();
+            alert('✅ System saved successfully!');
+            updateDashboard();
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('systemForm').reset();
+            document.getElementById('reportedDate').valueAsDate = new Date();
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const working = systems.filter(s => s.status === 'Working').length;
+            const notWorking = systems.filter(s => s.status === 'Not Working').length;
+            const underRepair = systems.filter(s => s.status === 'Under Repair').length;
+            const total = systems.length;
+
+            document.getElementById('statWorking').textContent = working;
+            document.getElementById('statNotWorking').textContent = notWorking;
+            document.getElementById('statUnderRepair').textContent = underRepair;
+            document.getElementById('statTotal').textContent = total;
+
+            // Lab summary
+            const labs = ['6005', '6004', '6012', '3003', '3005'];
+            let labSummaryHTML = '';
+            labs.forEach(lab => {
+                const labSystems = systems.filter(s => s.lab === lab);
+                const labWorking = labSystems.filter(s => s.status === 'Working').length;
+                const labTotal = labSystems.length;
+                labSummaryHTML += `
+                    <div class="summary-item">
+                        <h3>Lab ${lab}</h3>
+                        <div class="number">${labWorking}/${labTotal}</div>
+                        <small>Working</small>
+                    </div>
+                `;
+            });
+            document.getElementById('labSummary').innerHTML = labSummaryHTML;
+
+            // Recent complaints
+            const complaints = systems.filter(s => s.complaint && (s.status === 'Not Working' || s.status === 'Under Repair')).slice(-5);
+            let recentHTML = '<div class="table-container"><table style="width:100%;"><thead><tr><th>System ID</th><th>Lab</th><th>Issue</th><th>Date</th></tr></thead><tbody>';
+            if (complaints.length === 0) {
+                recentHTML += '<tr><td colspan="4" style="text-align:center; padding:20px;">No complaints</td></tr>';
+            } else {
+                complaints.forEach(c => {
+                    recentHTML += `<tr><td>${c.id}</td><td>Lab ${c.lab}</td><td>${c.issueCategory || 'N/A'}</td><td>${c.reportedDate}</td></tr>`;
+                });
+            }
+            recentHTML += '</tbody></table></div>';
+            document.getElementById('recentComplaints').innerHTML = recentHTML;
+        }
+
+        // Display all systems
+        function displayAllSystems() {
+            const tbody = document.getElementById('systemsBody');
+            if (systems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><p>No systems added yet.</p></td></tr>';
+                return;
+            }
+
+            let html = '';
+            systems.forEach(sys => {
+                const statusClass = 'status-' + sys.status.toLowerCase().replace(' ', '-');
+                html += `
+                    <tr>
+                        <td><strong>${sys.id}</strong></td>
+                        <td>${sys.lab}</td>
+                        <td>${sys.seat || '-'}</td>
+                        <td>${sys.makeModel || '-'}</td>
+                        <td><span class="status-badge ${statusClass}">${sys.status}</span></td>
+                        <td>${sys.issueCategory || '-'}</td>
+                        <td>${sys.reportedDate}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-small btn-secondary" onclick="editSystem('${sys.id}')">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteSystem('${sys.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Display complaints
+        function displayComplaints() {
+            const tbody = document.getElementById('complaintsBody');
+            const complaints = systems.filter(s => s.complaint);
+            
+            if (complaints.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><p>No complaints recorded.</p></td></tr>';
+                return;
+            }
+
+            let html = '';
+            complaints.forEach(sys => {
+                html += `
+                    <tr>
+                        <td><strong>${sys.id}</strong></td>
+                        <td>${sys.lab}</td>
+                        <td>${sys.issueCategory}</td>
+                        <td>${sys.complaint.substring(0, 50)}...</td>
+                        <td>${sys.reportedDate}</td>
+                        <td>${sys.assignedTo || '-'}</td>
+                        <td>${sys.resolution ? sys.reportedDate : 'Pending'}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Filter table
+        function filterTable() {
+            const searchVal = document.getElementById('searchBox').value.toLowerCase();
+            const labVal = document.getElementById('labFilter').value;
+            const statusVal = document.getElementById('statusFilter').value;
+
+            const filtered = systems.filter(s => 
+                (s.id.toLowerCase().includes(searchVal) || 
+                 s.makeModel.toLowerCase().includes(searchVal)) &&
+                (!labVal || s.lab === labVal) &&
+                (!statusVal || s.status === statusVal)
+            );
+
+            const tbody = document.getElementById('systemsBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No results found</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(sys => {
+                const statusClass = 'status-' + sys.status.toLowerCase().replace(' ', '-');
+                html += `
+                    <tr>
+                        <td><strong>${sys.id}</strong></td>
+                        <td>${sys.lab}</td>
+                        <td>${sys.seat || '-'}</td>
+                        <td>${sys.makeModel || '-'}</td>
+                        <td><span class="status-badge ${statusClass}">${sys.status}</span></td>
+                        <td>${sys.issueCategory || '-'}</td>
+                        <td>${sys.reportedDate}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-small btn-secondary" onclick="editSystem('${sys.id}')">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteSystem('${sys.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Filter complaints
+        function filterComplaints() {
+            const labVal = document.getElementById('complaintLabFilter').value;
+            const statusVal = document.getElementById('complaintStatusFilter').value;
+
+            const filtered = systems.filter(s => 
+                s.complaint &&
+                (!labVal || s.lab === labVal) &&
+                (!statusVal || s.status === statusVal)
+            );
+
+            const tbody = document.getElementById('complaintsBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No results found</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(sys => {
+                html += `
+                    <tr>
+                        <td><strong>${sys.id}</strong></td>
+                        <td>${sys.lab}</td>
+                        <td>${sys.issueCategory}</td>
+                        <td>${sys.complaint.substring(0, 50)}...</td>
+                        <td>${sys.reportedDate}</td>
+                        <td>${sys.assignedTo || '-'}</td>
+                        <td>${sys.resolution ? sys.reportedDate : 'Pending'}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Generate reports
+        function generateReports() {
+            const labs = ['6005', '6004', '6012', '3003', '3005'];
+            let reportHTML = '';
+            
+            labs.forEach(lab => {
+                const labSystems = systems.filter(s => s.lab === lab);
+                const working = labSystems.filter(s => s.status === 'Working').length;
+                const notWorking = labSystems.filter(s => s.status === 'Not Working').length;
+                const underRepair = labSystems.filter(s => s.status === 'Under Repair').length;
+
+                reportHTML += `
+                    <div class="summary-item">
+                        <h3>Lab ${lab}</h3>
+                        <div style="text-align:left; font-size:12px;">
+                            <div>✅ Working: <strong>${working}</strong></div>
+                            <div>❌ Not Working: <strong>${notWorking}</strong></div>
+                            <div>🔧 Under Repair: <strong>${underRepair}</strong></div>
+                            <div style="border-top: 1px solid #ddd; padding-top: 8px; margin-top: 8px;">Total: <strong>${labSystems.length}</strong></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('reportSummary').innerHTML = reportHTML;
+
+            // Complaint stats
+            const totalComplaints = systems.filter(s => s.complaint).length;
+            const issueBreakdown = {};
+            systems.forEach(s => {
+                if (s.issueCategory) {
+                    issueBreakdown[s.issueCategory] = (issueBreakdown[s.issueCategory] || 0) + 1;
+                }
+            });
+
+            let statsHTML = '<ul style="list-style: none; padding: 0;">';
+            statsHTML += `<li style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Total Complaints:</strong> ${totalComplaints}</li>`;
+            Object.entries(issueBreakdown).forEach(([issue, count]) => {
+                statsHTML += `<li style="padding: 8px; border-bottom: 1px solid #ddd;">${issue}: <strong>${count}</strong></li>`;
+            });
+            statsHTML += '</ul>';
+
+            document.getElementById('complaintStats').innerHTML = statsHTML;
+        }
+
+        // Delete system
+        function deleteSystem(id) {
+            if (confirm(`Are you sure you want to delete ${id}?`)) {
+                systems = systems.filter(s => s.id !== id);
+                localStorage.setItem('labSystems', JSON.stringify(systems));
+                displayAllSystems();
+                alert('System deleted!');
+            }
+        }
+
+        // Edit system (load into form)
+        function editSystem(id) {
+            const system = systems.find(s => s.id === id);
+            if (system) {
+                document.getElementById('sysId').value = system.id;
+                document.getElementById('labNo').value = system.lab;
+                document.getElementById('seatNo').value = system.seat;
+                document.getElementById('makeModel').value = system.makeModel;
+                document.getElementById('specs').value = system.specs;
+                document.getElementById('osType').value = system.os;
+                document.getElementById('status').value = system.status;
+                document.getElementById('issueCategory').value = system.issueCategory;
+                document.getElementById('detailedComplaint').value = system.complaint;
+                document.getElementById('reportedDate').value = system.reportedDate;
+                document.getElementById('reportedBy').value = system.reportedBy;
+                document.getElementById('assignedTo').value = system.assignedTo;
+                document.getElementById('resolution').value = system.resolution;
+                
+                // Scroll to form
+                document.getElementById('sysId').scrollIntoView({ behavior: 'smooth' });
+                switchTab('add-system');
+            }
+        }
+
+        // Export data
+        function exportData() {
+            let csv = 'System ID,Lab,Seat,Make/Model,Specs,OS,Status,Issue Category,Complaint,Reported Date,Reported By,Assigned To,Resolution\n';
+            systems.forEach(sys => {
+                csv += `"${sys.id}","${sys.lab}","${sys.seat}","${sys.makeModel}","${sys.specs}","${sys.os}","${sys.status}","${sys.issueCategory}","${sys.complaint}","${sys.reportedDate}","${sys.reportedBy}","${sys.assignedTo}","${sys.resolution}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lab-systems-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Print report
+        function printReport() {
+            window.print();
+        }
+
+        // Initialize
+        updateDashboard();
+    </script>
+</body>
+</html>
